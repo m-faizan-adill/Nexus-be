@@ -25,6 +25,13 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1", routes);
 
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: `Route ${req.method} ${req.originalUrl} not found`,
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
