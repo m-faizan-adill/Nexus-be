@@ -36,9 +36,9 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email, role });
 
         if (!user) {
             return res.status(404).json({
@@ -67,4 +67,21 @@ export const login = async (req, res) => {
             message: error.message,
         });
     }
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select(
+      "-password"
+    );
+
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
