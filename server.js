@@ -2,13 +2,17 @@ import express from "express";
 import cors from "cors";
 
 import connectDB from "./src/config/db.js";
-import { PORT } from "./src/config/env.js";
+import { FRONTEND_URL, PORT } from "./src/config/env.js";
 
 const app = express();
 
 connectDB();
 
-app.use(cors());
+app.use(cors({
+    origin: FRONTEND_URL,
+    credentials: true,
+  }));
+  
 app.use(express.json());
 
 app.get("/", (req, res) => {
