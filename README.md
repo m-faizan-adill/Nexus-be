@@ -95,3 +95,41 @@ server.js
 
 ```
 ```
+
+## Progress Update
+
+### Authentication Module (In Progress)
+
+Completed:
+
+* Created User model based on frontend data structure.
+* Installed authentication dependencies:
+
+  * bcryptjs
+  * jsonwebtoken
+* Created authentication controller structure.
+* Created authentication routes.
+* Implemented centralized route management using `routes/index.js`.
+* Added API versioning (`/api/v1`).
+* Prepared JWT-based authentication architecture.
+* Prepared password hashing workflow using bcrypt.
+
+Current Endpoints:
+
+```http
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+```
+
+Next Steps:
+
+* Complete register controller logic.
+* Complete login controller logic.
+* Generate JWT tokens after login.
+* Create authentication middleware.
+* Implement protected routes.
+* Create profile APIs.
+* Connect frontend authentication with backend APIs.
+
+```
+```
