@@ -1,9 +1,10 @@
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 
-const express = require("express");
-const cors = require("cors");
+import connectDB from "./src/config/db.js";
 
-const connectDB = require("./src/config/db");
+dotenv.config();
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "Nexus Backend Running"
+    message: "Nexus Backend Running",
   });
 });
 
