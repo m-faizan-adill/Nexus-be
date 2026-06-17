@@ -1,6 +1,6 @@
-import User from "../models/User.js";
-import EntrepreneurProfile from "../models/EntrepreneurProfile.js";
-import InvestorProfile from "../models/InvestorProfile.js";
+import User from "../models/User.model.js";
+import EntrepreneurProfile from "../models/EntrepreneurProfile.model.js";
+import InvestorProfile from "../models/InvestorProfile.model.js";
 
 import { STATUS } from "../constants/statusCodes.js";
 
