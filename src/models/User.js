@@ -27,22 +27,8 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    // Entrepreneur Fields
-    startupName: String,
-    pitchSummary: String,
-    fundingNeeded: String,
-    industry: String,
-    location: String,
-    foundedYear: Number,
-    teamSize: Number,
-
-    // Investor Fields
-    investmentInterests: [String],
-    investmentStage: [String],
-    portfolioCompanies: [String],
-    totalInvestments: Number,
-    minimumInvestment: String,
-    maximumInvestment: String,
+    resetPasswordToken: { type: String },
+    resetPasswordExpire: { type: Date },
   },
   {
     timestamps: true,
