@@ -1,14 +1,15 @@
 import crypto from "crypto";
 
-import User from "../models/User.js";
-import EntrepreneurProfile from "../models/EntrepreneurProfile.js";
-import InvestorProfile from "../models/InvestorProfile.js";
+import User from "../models/User.model.js";
+import EntrepreneurProfile from "../models/EntrepreneurProfile.model.js";
+import InvestorProfile from "../models/InvestorProfile.model.js";
 import { generateToken } from "../utils/jwt.util.js";
 import { comparePassword, hashPassword } from "../utils/password.util.js";
 import { STATUS } from "../constants/statusCodes.js";
+import { ROLES } from "../constants/roles.js";
 
 export const registerUser = async ({ name, email, password, role }) => {
-    if (!["entrepreneur", "investor"].includes(role)) {
+    if (!Object.values(ROLES).includes(role)) {
         const error = new Error("Invalid role");
         error.statusCode = STATUS.BAD_REQUEST;
         throw error;
@@ -22,12 +23,20 @@ export const registerUser = async ({ name, email, password, role }) => {
 
     const hashed = await hashPassword(password);
     const user = await User.create({ name, email, password: hashed, role });
-    const profile =
-        user.role === "entrepreneur"
-            ? await EntrepreneurProfile.findOne({ user: user._id })
-            : await InvestorProfile.findOne({ user: user._id });
+    if (role === ROLES.ENTREPRENEUR) {
+        await EntrepreneurProfile.create({
+            user: user._id,
+        });
+    }
+
+    if (role === ROLES.INVESTOR) {
+        await InvestorProfile.create({
+            user: user._id,
+        });
+    }
 
     const token = generateToken(user._id);
+
     return {
         token,
         user: {
@@ -77,13 +86,13 @@ export const getUser = async (id) => {
         throw error;
     }
     let profile = null;
-    if (user.role === "entrepreneur") {
+    if (user.role === ROLES.ENTREPRENEUR) {
         profile = await EntrepreneurProfile.findOne({
             user: user._id,
         });
     }
 
-    if (user.role === "investor") {
+    if (user.role === ROLES.INVESTOR) {
         profile = await InvestorProfile.findOne({
             user: user._id,
         });
