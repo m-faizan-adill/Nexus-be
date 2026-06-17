@@ -5,6 +5,7 @@ import EntrepreneurProfile from "../models/EntrepreneurProfile.model.js";
 import InvestorProfile from "../models/InvestorProfile.model.js";
 import { generateToken } from "../utils/jwt.util.js";
 import { comparePassword, hashPassword } from "../utils/password.util.js";
+import { throwError } from "../utils/apiError.util.js";
 import { STATUS } from "../constants/statusCodes.js";
 import { ROLES } from "../constants/roles.js";
 
@@ -16,44 +17,33 @@ export const registerUser = async ({ name, email, password, role }) => {
     }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-        const error = new Error("User already exists");
-        error.statusCode = STATUS.CONFLICT;
-        throw error;
+        throwError("User already exists", STATUS.CONFLICT);
     }
 
     const hashed = await hashPassword(password);
     const user = await User.create({ name, email, password: hashed, role });
-    if (role === ROLES.ENTREPRENEUR) {
-        await EntrepreneurProfile.create({
-            user: user._id,
-        });
-    }
+    const PROFILE_MODELS = {
+        [ROLES.ENTREPRENEUR]: EntrepreneurProfile,
+        [ROLES.INVESTOR]: InvestorProfile,
+    };
+    const ProfileModel = PROFILE_MODELS[role];
 
-    if (role === ROLES.INVESTOR) {
-        await InvestorProfile.create({
-            user: user._id,
-        });
+    if (ProfileModel) {
+        await ProfileModel.create({ user: user._id, });
     }
 
     const token = generateToken(user._id);
 
     return {
         token,
-        user: {
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-        },
+        user: user,
     };
 }
 
 export const loginUser = async ({ email, password, role }) => {
     const user = await User.findOne({ email, role }).select("+password");
     if (!user) {
-        const error = new Error("User not found");
-        error.statusCode = STATUS.NOT_FOUND;
-        throw error;
+        throwError("User not found", STATUS.NOT_FOUND);
     }
 
     const isMatch = await comparePassword(password, user.password);
@@ -81,22 +71,20 @@ export const loginUser = async ({ email, password, role }) => {
 export const getUser = async (id) => {
     const user = await User.findById(id).select("-password");
     if (!user) {
-        const error = new Error("User not found");
-        error.statusCode = STATUS.NOT_FOUND;
-        throw error;
+        throwError("User not found", STATUS.NOT_FOUND);
     }
-    let profile = null;
-    if (user.role === ROLES.ENTREPRENEUR) {
-        profile = await EntrepreneurProfile.findOne({
-            user: user._id,
-        });
-    }
+    const PROFILE_MODELS = {
+        [ROLES.ENTREPRENEUR]: EntrepreneurProfile,
+        [ROLES.INVESTOR]: InvestorProfile,
+    };
+    const ProfileModel = PROFILE_MODELS[user.role];
 
-    if (user.role === ROLES.INVESTOR) {
-        profile = await InvestorProfile.findOne({
+    const profile = ProfileModel
+        ? await ProfileModel.findOne({
             user: user._id,
-        });
-    }
+        })
+        : null;
+
     return { user, profile };
 };
 
