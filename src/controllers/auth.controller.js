@@ -6,8 +6,8 @@ export const register = async (req, res) => {
     try {
         const data = await registerUser(req.body);
         successResponse(res, data, STATUS.CREATED);
-    } catch (error) {
-        errorResponse(res, error.message, error.statusCode || STATUS.SERVER_ERROR);
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -15,8 +15,8 @@ export const login = async (req, res) => {
     try {
         const data = await loginUser(req.body);
         successResponse(res, data, STATUS.OK);
-    } catch (error) {
-        errorResponse(res, error.message, error.statusCode || STATUS.SERVER_ERROR);
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -24,8 +24,8 @@ export const getMe = async (req, res) => {
     try {
         const data = await getUser(req.user._id);
         successResponse(res, data, STATUS.OK);
-    } catch (error) {
-        errorResponse(res, error.message, error.statusCode || STATUS.SERVER_ERROR);
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -33,8 +33,8 @@ export const forgotPasswordHandler = async (req, res) => {
     try {
         const data = await forgotPassword(req.body);
         successResponse(res, data, STATUS.OK);
-    } catch (error) {
-        errorResponse(res, error.message, error.statusCode || STATUS.SERVER_ERROR);
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -43,6 +43,6 @@ export const resetPasswordHandler = async (req, res) => {
         const data = await resetPassword(req.body);
         successResponse(res, data, STATUS.OK);
     } catch (error) {
-        errorResponse(res, error.message, error.statusCode || STATUS.SERVER_ERROR);
+        next(err);
     }
 };
