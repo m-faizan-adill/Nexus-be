@@ -3,6 +3,7 @@ import EntrepreneurProfile from "../models/EntrepreneurProfile.model.js";
 import InvestorProfile from "../models/InvestorProfile.model.js";
 
 import { STATUS } from "../constants/statusCodes.js";
+import { throwError } from "../utils/apiError.util.js";
 
 export const updateUserProfile = async (
   userId,
@@ -11,9 +12,7 @@ export const updateUserProfile = async (
   const user = await User.findById(userId);
 
   if (!user) {
-    const error = new Error("User not found");
-    error.statusCode = STATUS.NOT_FOUND;
-    throw error;
+    throwError("User not found", STATUS.NOT_FOUND);
   }
 
   // Common fields
@@ -79,8 +78,7 @@ export const updateUserProfile = async (
       );
   }
 
-  const updatedUser = await User.findById(userId)
-    .select("-password");
+  const updatedUser = await User.findById(userId);
 
   return {
     user: updatedUser,
